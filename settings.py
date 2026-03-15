@@ -9,5 +9,7 @@ MAX_TIME = 5000
 PLAY_ICON_PATH = 'assets/images/play_button.png'
 PAUSE_ICON_PATH = 'assets/images/pause_button.png'
 FONT_COLOR = (255, 255, 255)
-HIGHLIGHT_COLOR = (255, 0, 0)
+HIGHLIGHT_COLOR = (161, 227, 179)
+BACKGROUND_COLOR = (53, 64, 56)
+DARK_COLOR = (30, 30, 30)
 
