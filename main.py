@@ -23,7 +23,15 @@ PLAY_BUTTON = button.Button(HIGHLIGHT_COLOR, (3*WIDTH // 4 + 50, HEIGHT // 4 + 4
 INPUT_BOX = textbox.TextBox(WIDTH // 3 + 50, HEIGHT * 2 // 3, WIDTH // 2 - 30, 50, font_main)
 BACK_BUTTON = pygame.Rect(WIDTH // 2 - 100, HEIGHT * 2 // 3, 200, 40)
 
-song = clip.Clip('assets/audio/Audio-Demo1.mp3', 49.6, "that I want it that way")
+songs = []
+with open('audio_clips.txt', 'r') as f:
+    lines = f.readlines()
+    for line in lines:
+        path, offset, answer = line.strip().split(',')
+        song = clip.Clip(path, float(offset), answer)
+        songs.append(song)
+song_index = 1
+song = songs[song_index]
 users = [user.User("Player 1"), user.User("Player 2")]
 
 running = True
@@ -40,12 +48,11 @@ while running:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if PLAY_BUTTON.is_clicked(event.pos):
                     if not PLAY_BUTTON.initial:
-                        pygame.mixer.music.load('assets/audio/Audio-Demo1.mp3')
-                        pygame.mixer.music.play(-1, 49.5 + (position / 1000))
+                        song.play(position/1000)
                         PLAY_BUTTON.update_icon(PAUSE_ICON_PATH)
                         timer = pygame.time.get_ticks() - position
                     else:
-                        pygame.mixer.music.pause()
+                        song.pause()
                         PLAY_BUTTON.update_icon(PLAY_ICON_PATH)
                         position = pygame.time.get_ticks() - timer
             
@@ -62,15 +69,18 @@ while running:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if BACK_BUTTON.collidepoint(event.pos):
                     STATE = 'main'
+                    song_index = (song_index + 1) % len(songs)
+                    song = songs[song_index]
                     song.pause()
                     position = 0
                     timer = 0
                     PLAY_BUTTON.update_icon(PLAY_ICON_PATH)
+                    PLAY_BUTTON.initial = False
     
     if PLAY_BUTTON.initial:
         position = (pygame.time.get_ticks() - timer) if timer else 0
         if position >= MAX_TIME:
-            pygame.mixer.music.stop()
+            song.pause()
             PLAY_BUTTON.update_icon(PLAY_ICON_PATH)
             timer = 0
             position = 0
