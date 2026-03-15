@@ -25,18 +25,15 @@ while running:
                     pygame.mixer.music.load('assets/audio/Audio-Demo1.mp3')
                     pygame.mixer.music.play(-1, 80 + (position / 1000))
                     PLAY_BUTTON.update_icon(PAUSE_ICON_PATH)
-                    timer = pygame.time.get_ticks()
-                    if position:
-                        timer -= position
+                    timer = pygame.time.get_ticks() - position
                 else:
                     pygame.mixer.music.pause()
                     PLAY_BUTTON.update_icon(PLAY_ICON_PATH)
-                    position = pygame.time.get_ticks()
-                    if timer:
-                        position -= timer
-    if timer:
-        elapsed_time = (pygame.time.get_ticks() - timer)
-        if elapsed_time >= MAX_TIME:
+                    position = pygame.time.get_ticks() - timer
+    
+    if PLAY_BUTTON.initial:
+        position = (pygame.time.get_ticks() - timer) if timer else 0
+        if position >= MAX_TIME:
             pygame.mixer.music.stop()
             PLAY_BUTTON.update_icon(PLAY_ICON_PATH)
             timer = 0
@@ -45,6 +42,16 @@ while running:
     screen.fill((30, 30, 30))
 
     PLAY_BUTTON.draw(screen)
+
+    progress = min(position / MAX_TIME, 1)
+    pygame.draw.rect(screen, FONT_COLOR, 
+                    (WIDTH // 4, (HEIGHT // 4) - (PLAY_BUTTON.radius // 1.5),
+                    WIDTH // 3, int(1.5 * PLAY_BUTTON.radius)),
+                    border_radius=15)
+    pygame.draw.rect(screen, HIGHLIGHT_COLOR,
+                    (WIDTH // 4, (HEIGHT // 4) - (PLAY_BUTTON.radius // 1.5), 
+                    int((WIDTH / 3) * progress), int(1.5 * PLAY_BUTTON.radius)),
+                    border_radius=15)
     pygame.display.flip()
     clock.tick(60)
 
