@@ -1,14 +1,10 @@
 import pygame
 import sys
 import button
-
+from settings import *
 pygame.init()
 pygame.mixer.init()
 
-WIDTH = 800
-HEIGHT = 600
-PLAY_BUTTON = button.Button((0, 255, 0), (WIDTH // 2, HEIGHT // 2), 50, 'assets/images/play_button.png')
-MAX_TIME = 5000
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("My Pygame Project")
@@ -28,13 +24,13 @@ while running:
                 if not PLAY_BUTTON.initial:
                     pygame.mixer.music.load('assets/audio/Audio-Demo1.mp3')
                     pygame.mixer.music.play(-1, 80 + (position / 1000))
-                    PLAY_BUTTON.update_icon('assets/images/pause_button.png')
+                    PLAY_BUTTON.update_icon(PAUSE_ICON_PATH)
                     timer = pygame.time.get_ticks()
                     if position:
                         timer -= position
                 else:
                     pygame.mixer.music.pause()
-                    PLAY_BUTTON.update_icon('assets/images/play_button.png')
+                    PLAY_BUTTON.update_icon(PLAY_ICON_PATH)
                     position = pygame.time.get_ticks()
                     if timer:
                         position -= timer
@@ -42,7 +38,7 @@ while running:
         elapsed_time = (pygame.time.get_ticks() - timer)
         if elapsed_time >= MAX_TIME:
             pygame.mixer.music.stop()
-            PLAY_BUTTON.update_icon('assets/images/play_button.png')
+            PLAY_BUTTON.update_icon(PLAY_ICON_PATH)
             timer = 0
             position = 0
         
