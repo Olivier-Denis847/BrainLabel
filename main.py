@@ -23,9 +23,10 @@ STATE = 'title'
 
 PLAY_BUTTON = button.Button(HIGHLIGHT_COLOR, (3*WIDTH // 4 + 50, HEIGHT // 4 + 40), 20, PLAY_ICON_PATH)
 INPUT_BOX = textbox.TextBox(WIDTH // 3 + 50, HEIGHT * 2 // 3, WIDTH // 2 - 30, 50, font_main)
-BACK_BUTTON = pygame.Rect(WIDTH // 2 - 100, HEIGHT * 2 // 3, 200, 40)
+BACK_BUTTON_RESULTS = pygame.Rect(WIDTH // 2 - 100, HEIGHT * 2 // 3, 200, 40)
 START_BUTTON = pygame.Rect(WIDTH // 2 - 100, HEIGHT // 2 - 25, 200, 50)
 ROOM_CODE_BOX = textbox.TextBox(WIDTH // 2 - 100, HEIGHT * 3 // 4 - 25, 200, 40, font_main)
+BACK_ARROW_MAIN = button.Button(HIGHLIGHT_COLOR, (25, 25), 20, BACK_ICON_PATH)
 
 songs = []
 with open('audio_clips.txt', 'r') as f:
@@ -60,6 +61,14 @@ while running:
                         song.pause()
                         PLAY_BUTTON.update_icon(PLAY_ICON_PATH)
                         position = pygame.time.get_ticks() - timer
+                elif BACK_ARROW_MAIN.is_clicked(event.pos):
+                    song.pause()
+                    PLAY_BUTTON.update_icon(PLAY_ICON_PATH)
+                    timer = 0
+                    position = 0
+                    PLAY_BUTTON.initial = False
+                    STATE = 'title'
+                    song_index = 0
             
             guess = INPUT_BOX.handle_event(event)
             if guess is not None:
@@ -73,7 +82,7 @@ while running:
 
         elif STATE == 'results':
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if BACK_BUTTON.collidepoint(event.pos):
+                if BACK_BUTTON_RESULTS.collidepoint(event.pos):
                     STATE = 'main'
                     song_index = (song_index + 1) % len(songs)
                     song = songs[song_index]
@@ -105,9 +114,6 @@ while running:
     screen.fill(DARK_COLOR)
 
     if STATE == 'main':
-        PLAY_BUTTON.draw(screen)
-        INPUT_BOX.draw(screen)
-
         pygame.draw.rect(screen, BACKGROUND_COLOR, 
                         (0, 0, WIDTH // 3 - 25, HEIGHT))
         pygame.draw.rect(screen, FONT_COLOR, 
@@ -135,6 +141,10 @@ while running:
 
         room_text = font_small.render(f'Room Code: {room_code}', True, FONT_COLOR)
         screen.blit(room_text, (10, HEIGHT - room_text.get_height() - 10))
+        
+        PLAY_BUTTON.draw(screen)
+        INPUT_BOX.draw(screen)
+        BACK_ARROW_MAIN.draw(screen)
 
     elif STATE == 'results':
         answer_text = font_main.render(f'Answer: {song.answer}', True, FONT_COLOR)
@@ -144,10 +154,10 @@ while running:
         screen.blit(guess_text, (WIDTH // 2 - guess_text.get_width() // 2, HEIGHT // 2 - guess_text.get_height() - 20))
         screen.blit(result_text, (WIDTH // 2 - result_text.get_width() // 2, HEIGHT // 2 - result_text.get_height() // 2))
 
-        pygame.draw.rect(screen, HIGHLIGHT_COLOR, BACK_BUTTON, border_radius=15)
+        pygame.draw.rect(screen, HIGHLIGHT_COLOR, BACK_BUTTON_RESULTS, border_radius=15)
         back_text = font_main.render('Back', True, DARK_COLOR)
-        screen.blit(back_text, (BACK_BUTTON.centerx - back_text.get_width() // 2, 
-                                BACK_BUTTON.centery - back_text.get_height() // 2))
+        screen.blit(back_text, (BACK_BUTTON_RESULTS.centerx - back_text.get_width() // 2, 
+                                BACK_BUTTON_RESULTS.centery - back_text.get_height() // 2))
 
     elif STATE == 'title':
         title_text = font_large.render('BrainLabel', True, FONT_COLOR)
